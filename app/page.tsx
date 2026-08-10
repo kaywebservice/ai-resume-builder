@@ -787,6 +787,11 @@ ${hasDraft ? `Old Resume Draft:\n${draftText}` : ""}
 
       <footer className="relative z-10 mt-4 border-t border-white/5 py-8 text-center">
         <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500">Designed by <span className="auth-gradient auth-gradient-animated bg-clip-text font-bold text-transparent">Kaywebservice Enterprise Solutions</span></p>
+        <div className="mt-3 flex items-center justify-center gap-4 text-[11px] text-slate-500">
+          <Link href="/privacy" className="transition hover:text-slate-300">Privacy Policy</Link>
+          <span className="text-slate-700">·</span>
+          <Link href="/terms" className="transition hover:text-slate-300">Terms of Service</Link>
+        </div>
       </footer>
     </main>
   );
