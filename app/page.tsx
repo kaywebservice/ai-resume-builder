@@ -535,8 +535,8 @@ ${hasDraft ? `Old Resume Draft:\n${draftText}` : ""}
             <button type="button" data-active={activeTab === "resume"} onClick={() => setActiveTab("resume")}>Resume</button>
             <button type="button" data-active={activeTab === "cover"} onClick={() => setActiveTab("cover")}>Cover Letter</button>
           </div>
-          <div className="hidden items-center gap-3 md:flex">
-            <Link href="/templates" className="btn-ghost rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-blue-300 transition hover:bg-blue-500/10">Templates</Link>
+          <div className="flex items-center gap-3">
+            <Link href="/templates" className="btn-ghost hidden rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-blue-300 transition hover:bg-blue-500/10 sm:inline-flex">Templates</Link>
             <ThemeToggle />
             <div className="relative">
               <button type="button" onClick={() => setPricingOpen((open) => !open)} className="premium-chip cursor-pointer" aria-expanded={pricingOpen}>
@@ -594,6 +594,52 @@ ${hasDraft ? `Old Resume Draft:\n${draftText}` : ""}
             <span className="stat-chip"><b>ATS</b> Match Scoring</span>
             <span className="stat-chip"><b>AI</b> Keyword Optimisation</span>
             <span className="stat-chip"><b>DOCX · PDF</b> One-Click Export</span>
+          </div>
+        </section>
+
+        <section className="anim-fade-in-up mt-10 md:mt-14" id="pricing">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="eyebrow">Pricing</p>
+              <h2 className="mt-2 text-2xl font-black tracking-tight text-white md:text-3xl">
+                Unlock the full studio — one-time, lifetime
+              </h2>
+            </div>
+            <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">Secure checkout · Card · Apple Pay · Google Pay</p>
+          </div>
+          <div className="mt-6 grid gap-5 md:grid-cols-2">
+            <div className="glass-panel hairline rounded-3xl border-t-2 border-t-blue-400/40 p-6 md:p-7">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-black uppercase tracking-[0.2em] text-white">PRO Suite</p>
+                <span className="premium-chip">POPULAR</span>
+              </div>
+              <p className="mt-4 text-4xl font-black text-blue-200">$14.99<span className="ml-2 align-middle text-xs font-medium uppercase tracking-[0.18em] text-slate-500">one-time</span></p>
+              <ul className="mt-5 space-y-2.5 text-sm leading-relaxed text-slate-400">
+                <li>✓ All 30 premium templates + ATS scoring</li>
+                <li>✓ AI keyword optimisation for every role</li>
+                <li>✓ DOCX + PDF one-click export</li>
+                <li>✓ Lifetime access — no subscription</li>
+              </ul>
+              <button type="button" onClick={() => openTier("pro")} className="btn-primary mt-7 w-full rounded-xl py-3.5 text-sm font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.99]">
+                {isPremiumUnlocked ? "PRO ACTIVE" : "Unlock PRO →"}
+              </button>
+            </div>
+            <div className="glass-panel hairline rounded-3xl border-t-2 border-t-violet-400/40 p-6 md:p-7">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-black uppercase tracking-[0.2em] text-white">PRO+ Suite</p>
+                <span className="premium-chip">BEST VALUE</span>
+              </div>
+              <p className="mt-4 text-4xl font-black text-violet-200">$29.99<span className="ml-2 align-middle text-xs font-medium uppercase tracking-[0.18em] text-slate-500">one-time</span></p>
+              <ul className="mt-5 space-y-2.5 text-sm leading-relaxed text-slate-400">
+                <li>✓ Everything in PRO</li>
+                <li>✓ AI cover letters matched to your resume</li>
+                <li>✓ Tailored rewriting for every job posting</li>
+                <li>✓ Priority support & future features</li>
+              </ul>
+              <button type="button" onClick={() => openTier("pro-plus")} className="btn-primary mt-7 w-full rounded-xl py-3.5 text-sm font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.99]">
+                {isPremiumUnlocked ? "PRO+ ACTIVE" : "Unlock PRO+ →"}
+              </button>
+            </div>
           </div>
         </section>
 
