@@ -3,12 +3,6 @@
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/track";
 
-const PAYMENT_PRO =
-  "https://pay.card2crypto.org/pay.php?address=yFsAReYXhKurv3wNMcRZUttbxMxPOMoT07cAgEiCB6nujWWv52CB8RcfxRJ50laTC3bsNwP9M4T5GhMCLnIYog%3D%3D&amount=14.99&provider=hosted&email=kaywebservice%40gmail.com&currency=USD";
-
-const PAYMENT_PLUS =
-  "https://pay.card2crypto.org/pay.php?address=9bxSHeILXOruaxlMnzb7Xkumj2jud0QrTetfN52kozXdEPmPWuZN3TCbUXf076henhIv95n38Ad%2F9sDGlMxVLQ%3D%3D&amount=29.99&provider=hosted&email=kaywebservice%40gmail.com&currency=USD";
-
 const CONFIRM_WINDOW_MS = 5 * 60 * 1000;
 const PENDING_KEY = "c2c-pending-until";
 const UNLOCK_KEY = "premium-unlocked";
@@ -19,17 +13,21 @@ type Step = "idle" | "paying" | "awaiting" | "unlocked";
 export function CheckoutModal({
   onUnlock,
   onClose,
+  initialTier = "pro",
 }: {
   onUnlock: () => void;
   onClose: () => void;
+  initialTier?: Tier;
 }) {
-  const [tier, setTier] = useState<Tier>("pro");
+  const [tier, setTier] = useState<Tier>(initialTier);
   const [step, setStep] = useState<Step>("idle");
-  const [reference, setReference] = useState("");
   const [secondsLeft, setSecondsLeft] = useState(300);
   const [leadEmail, setLeadEmail] = useState("");
   const [leadSaved, setLeadSaved] = useState(false);
   const [leadSaving, setLeadSaving] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState("");
+  const [openingPayment, setOpeningPayment] = useState(false);
+  const [payError, setPayError] = useState("");
 
   const finishUnlock = () => {
     localStorage.setItem(UNLOCK_KEY, "true");
@@ -95,12 +93,34 @@ export function CheckoutModal({
     return () => window.clearInterval(timer);
   }, [step, onUnlock]);
 
-  const paymentUrl = tier === "pro" ? PAYMENT_PRO : PAYMENT_PLUS;
   const tierName = tier === "pro" ? "PRO Suite" : "PRO+ Suite";
 
-  const openPayment = () => {
-    window.open(paymentUrl, "_blank", "noopener,noreferrer");
-    setStep("paying");
+  const openPayment = async () => {
+    setOpeningPayment(true);
+    try {
+      const response = await fetch("/api/creem/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tier }),
+      });
+      const payload: unknown = await response.json();
+      const body = payload && typeof payload === "object" ? payload as Record<string, unknown> : {};
+      if (!response.ok || body.success !== true) {
+        throw new Error(typeof body.error === "string" ? body.error : "Could not start the payment.");
+      }
+      const url = typeof body.url === "string" ? body.url : "";
+      if (!url) throw new Error("No checkout URL returned.");
+      setPaymentUrl(url);
+      window.open(url, "_blank", "noopener,noreferrer");
+      setStep("paying");
+    } catch (error) {
+      setOpeningPayment(false);
+      setPayError(error instanceof Error ? error.message : "Could not start the payment.");
+    }
+  };
+
+  const reopenPayment = () => {
+    if (paymentUrl) window.open(paymentUrl, "_blank", "noopener,noreferrer");
   };
 
   const confirmPayment = () => {
@@ -185,25 +205,24 @@ export function CheckoutModal({
 
             {step === "idle" && (
               <div className="anim-fade-in-up space-y-3">
-                <button type="button" onClick={openPayment} className="btn-primary w-full rounded-xl py-4 text-base font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.99]">
-                  Pay with Card
+                <button type="button" onClick={openPayment} disabled={openingPayment} className="btn-primary w-full rounded-xl py-4 text-base font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.99] disabled:opacity-60">
+                  {openingPayment ? "Preparing checkout…" : "Pay with Card"}
                 </button>
                 <p className="text-center text-[11px] leading-relaxed text-slate-500">
                   Visa · Mastercard · Apple Pay · Google Pay · SEPA. Secure hosted checkout.
                 </p>
+                {payError && (
+                  <p className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-xs text-rose-200">{payError}</p>
+                )}
               </div>
             )}
 
             {step === "paying" && (
               <div className="anim-fade-in-up space-y-3">
                 <p className="rounded-xl border border-blue-400/30 bg-blue-500/10 px-4 py-3 text-sm leading-relaxed text-blue-100">
-                  Payment window opened in a new tab. Your {tierName} will open automatically once payment is confirmed.
+                  Payment window opened in a new tab. Your {tierName} unlocks as soon as payment is confirmed — keep this tab open.
                 </p>
-                <button type="button" onClick={() => window.open(paymentUrl, "_blank", "noopener,noreferrer")} className="btn-ghost w-full rounded-xl py-3 text-sm font-semibold text-white">Reopen Payment Page</button>
-                <div className="pt-1">
-                  <label className="m-label" htmlFor="pay-ref">Payment reference (optional)</label>
-                  <input id="pay-ref" value={reference} onChange={(event) => setReference(event.target.value)} placeholder="Paste the payment ID from the confirmation screen" className="input-lux" />
-                </div>
+                <button type="button" onClick={reopenPayment} className="btn-ghost w-full rounded-xl py-3 text-sm font-semibold text-white">Reopen Payment Page</button>
                 <button type="button" onClick={confirmPayment} className="premium-chip w-full justify-center rounded-xl py-3.5 text-sm font-bold" style={{ border: "1px solid rgba(59,130,246,0.5)", background: "linear-gradient(120deg, rgba(37,99,235,0.2), rgba(59,130,246,0.3))", color: "#c7d6ff" }}>
                   I've Completed the Payment
                 </button>
@@ -216,11 +235,6 @@ export function CheckoutModal({
                   Thank you — we've received your confirmation. Your {tierName} will unlock automatically in{" "}
                   <span className="font-bold text-white">{mm}:{ss}</span> once payment is verified.
                 </p>
-                {reference && (
-                  <p className="rounded-lg bg-white/[0.04] px-3 py-2 text-xs text-slate-400">
-                    Reference recorded: <span className="font-semibold text-slate-200">{reference}</span>
-                  </p>
-                )}
                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-700/60">
                   <div className="progress-bar-indeterminate h-full w-full rounded-full" />
                 </div>

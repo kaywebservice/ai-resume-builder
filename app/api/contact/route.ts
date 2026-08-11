@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
+const TO_EMAIL = "kaywebservice@gmail.com";
+const FROM_EMAIL = "AI Resume Builder <onboarding@resend.dev>";
+
 export async function POST(request: Request) {
   try {
     const body: unknown = await request.json();
@@ -19,11 +22,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Message too long." }, { status: 400 });
     }
 
-    const { error } = await supabaseAdmin.from("messages").insert({ name, email, message });
-    if (error) {
-      console.error("contact insert failed:", error.message);
-      return NextResponse.json({ success: false, error: "Could not save your message. Please try again." }, { status: 500 });
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.error("RESEND_API_KEY is not set.");
+      return NextResponse.json(
+        { success: false, error: "Email service is not configured." },
+        { status: 500 },
+      );
     }
+
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [TO_EMAIL],
+        reply_to: email,
+        subject: `New portfolio message from ${name}`,
+        text: `New message from the portfolio contact form.\n\nName: ${name}\nEmail: ${email}\n\n${message}`,
+      }),
+    });
+
+    if (!resendResponse.ok) {
+      const detail = await resendResponse.text();
+      console.error("Resend failed:", resendResponse.status, detail);
+      return NextResponse.json({ success: false, error: "Could not deliver your message." }, { status: 502 });
+    }
+
+    await supabaseAdmin.from("messages").insert({ name, email, message });
 
     return NextResponse.json({ success: true });
   } catch {

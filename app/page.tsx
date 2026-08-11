@@ -122,6 +122,8 @@ export default function Home() {
   const [selectedTemplate, setSelectedTemplate] = useState("ats");
   const [isPremiumUnlocked, setIsPremiumUnlocked] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutTier, setCheckoutTier] = useState<"pro" | "pro-plus">("pro");
+  const [pricingOpen, setPricingOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [status, setStatus] = useState("");
   const [showSplash, setShowSplash] = useState(true);
@@ -137,7 +139,20 @@ export default function Home() {
   const drafts = useDrafts();
 
   useEffect(() => {
-    const premium = localStorage.getItem("premium-unlocked") === "true";
+    let premium = localStorage.getItem("premium-unlocked") === "true";
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("creem_checkout") === "done") {
+      premium = true;
+      localStorage.setItem("premium-unlocked", "true");
+      trackEvent("unlocked", {
+        tier: params.get("tier") === "pro-plus" ? "pro-plus" : "pro",
+        source: "creem_redirect",
+      });
+      params.delete("creem_checkout");
+      params.delete("tier");
+      const qs = params.toString();
+      window.history.replaceState({}, "", qs ? `?${qs}` : window.location.pathname);
+    }
     setIsPremiumUnlocked(premium);
   }, []);
 
@@ -187,6 +202,16 @@ export default function Home() {
     localStorage.setItem("premium-unlocked", "true");
     setShowCheckout(false);
   };
+
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === "premium-unlocked" && event.newValue === "true") {
+        setIsPremiumUnlocked(true);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setShowSplash(false), 5000);
@@ -474,6 +499,12 @@ ${hasDraft ? `Old Resume Draft:\n${draftText}` : ""}
     setStatus("Draft saved to My Drafts.");
   }
 
+  const openTier = (tier: "pro" | "pro-plus") => {
+    setCheckoutTier(tier);
+    setPricingOpen(false);
+    setShowCheckout(true);
+  };
+
   const previewData = resume ?? { ...initialResume, name: form.fullName, title: form.jobTitle, email: form.email, phone: form.phone, location: form.location, linkedin: form.linkedin, github: form.github, website: form.website, twitter: form.twitter, instagram: form.instagram, facebook: form.facebook, summary: form.summary };
 
   const bulletScore = scoreBullets(form.experience);
@@ -488,7 +519,7 @@ ${hasDraft ? `Old Resume Draft:\n${draftText}` : ""}
       </div>
 
       {showSplash && <SplashScreen />}
-      {showCheckout && <CheckoutModal onUnlock={handleUnlock} onClose={() => setShowCheckout(false)} />}
+      {showCheckout && <CheckoutModal initialTier={checkoutTier} onUnlock={handleUnlock} onClose={() => setShowCheckout(false)} />}
 
       <div className="relative z-10 mx-auto max-w-[1440px] px-5 py-6 md:px-10 md:py-10">
         <header className="glass-panel hairline anim-fade-in-down flex flex-wrap items-center justify-between gap-4 rounded-2xl px-5 py-3.5">
@@ -507,7 +538,41 @@ ${hasDraft ? `Old Resume Draft:\n${draftText}` : ""}
           <div className="hidden items-center gap-3 md:flex">
             <Link href="/templates" className="btn-ghost rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-blue-300 transition hover:bg-blue-500/10">Templates</Link>
             <ThemeToggle />
-            <button type="button" onClick={() => !isPremiumUnlocked && setShowCheckout(true)} className={`premium-chip ${isPremiumUnlocked ? "cursor-default" : "cursor-pointer"}`}>{isPremiumUnlocked ? "PRO ACTIVE" : "FREE TIER"}</button>
+            <div className="relative">
+              <button type="button" onClick={() => setPricingOpen((open) => !open)} className="premium-chip cursor-pointer" aria-expanded={pricingOpen}>
+                {isPremiumUnlocked ? "PRO ACTIVE" : "PRO PLANS"}
+              </button>
+              {pricingOpen && (
+                <>
+                  <button type="button" aria-label="Close pricing" onClick={() => setPricingOpen(false)} className="fixed inset-0 z-40 cursor-default" />
+                  <div className="anim-fade-in-up glass-panel hairline absolute right-0 top-full z-50 mt-3 w-[19.5rem] rounded-2xl p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-[10px] font-black uppercase tracking-[0.26em] text-white">Pricing</p>
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">One-time · Lifetime</p>
+                    </div>
+                    <div className="space-y-2.5">
+                      <button type="button" onClick={() => openTier("pro")} className="group w-full rounded-xl border border-blue-400/30 bg-blue-500/10 p-3.5 text-left transition hover:border-blue-400/60 hover:bg-blue-500/20">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-white">PRO Suite</span>
+                          <span className="text-lg font-black text-blue-200">$14.99</span>
+                        </div>
+                        <p className="mt-1 text-[11px] leading-snug text-slate-400">30 Premium Templates + ATS scoring</p>
+                        <span className="mt-2 inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-blue-300 group-hover:underline">Unlock PRO →</span>
+                      </button>
+                      <button type="button" onClick={() => openTier("pro-plus")} className="group w-full rounded-xl border border-violet-400/30 bg-violet-500/10 p-3.5 text-left transition hover:border-violet-400/60 hover:bg-violet-500/20">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-white">PRO+ Suite</span>
+                          <span className="text-lg font-black text-violet-200">$29.99</span>
+                        </div>
+                        <p className="mt-1 text-[11px] leading-snug text-slate-400">Everything in PRO + priority features</p>
+                        <span className="mt-2 inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-violet-300 group-hover:underline">Unlock PRO+ →</span>
+                      </button>
+                    </div>
+                    <p className="mt-3 text-center text-[10px] text-slate-500">Secure checkout · Card, Apple Pay & Google Pay</p>
+                  </div>
+                </>
+              )}
+            </div>
             <span className="text-[11px] tracking-[0.14em] text-slate-500">50 DESIGNS</span>
           </div>
         </header>
