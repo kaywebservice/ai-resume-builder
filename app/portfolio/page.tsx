@@ -78,6 +78,32 @@ const WEBSITES = [
   { name: "indieauthoralley.com", url: "https://indieauthoralley.com" },
 ];
 
+const WEBSITE_SERVICES = [
+  { name: "Landing Page", price: "$150–$400", description: "A single high-converting page for a product, campaign, or personal brand." },
+  { name: "Business Website", price: "$300–$800", description: "Multi-page site with services, about, testimonials, and contact." },
+  { name: "Portfolio Website", price: "$250–$550", description: "Showcase your work with project galleries and case studies." },
+  { name: "E-Commerce Store", price: "$600–$1,500", description: "Online store with cart, checkout, and payments — Shopify, WooCommerce, or custom." },
+  { name: "Restaurant & Café Website", price: "$200–$450", description: "Menus, reservations, photo galleries, and location details." },
+  { name: "Real Estate Website", price: "$600–$1,500", description: "Property listings, filters, agent profiles, and inquiry forms." },
+  { name: "School & Education Website", price: "$400–$1,000", description: "Admissions, courses, events, and news for schools and tutors." },
+  { name: "Church & Community Website", price: "$200–$500", description: "Events, sermons and media, donations, and announcements." },
+  { name: "News, Blog & Magazine", price: "$300–$800", description: "CMS-powered publishing with SEO, categories, and author pages." },
+  { name: "Booking & Reservation Site", price: "$400–$900", description: "Appointments, availability calendars, and instant confirmations." },
+  { name: "Event & Registration Website", price: "$300–$700", description: "Event pages, ticketing, RSVPs, and attendee management." },
+  { name: "Directory & Listing Website", price: "$700–$2,000", description: "Searchable business or service directories with profiles and reviews." },
+];
+
+const SAAS_SERVICES = [
+  { name: "SaaS MVP", price: "from $1,500", description: "Your core product built fast — enough to validate with real users." },
+  { name: "SaaS + Payment Integration", price: "from $2,500", description: "Subscriptions or one-time payments (Stripe, Creem) with webhooks and access control." },
+  { name: "AI-Powered SaaS", price: "from $3,000", description: "LLM features like AI generation, scoring, chat, and automation — similar to this resume builder." },
+  { name: "Dashboard & Admin Panel", price: "from $1,200", description: "Internal tools, analytics dashboards, and user management." },
+  { name: "CRM & Customer Management", price: "from $1,500", description: "Leads, pipelines, follow-ups, and team collaboration." },
+  { name: "Booking & Scheduling Platform", price: "from $1,800", description: "Multi-user scheduling with calendars, reminders, and payments." },
+  { name: "Automation & API Integrations", price: "from $1,000", description: "Connecting your tools, building workflows, and third-party APIs." },
+  { name: "Mobile-Ready Web App (PWA)", price: "from $1,200", description: "Installable, offline-capable web app that feels like a native mobile app." },
+];
+
 export default function PortfolioPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -209,6 +235,46 @@ export default function PortfolioPage() {
                 <span className="text-slate-500">↗</span>
               </a>
             ))}
+          </div>
+        </section>
+
+        <section className="mt-16">
+          <h2 className="section-title text-center">Services &amp; Pricing</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-slate-400">
+            Every project includes responsive design, SEO basics, and revisions until you're happy. Prices are starting
+            points — final quotes depend on scope.
+          </p>
+
+          <h3 className="mt-10 text-center text-xs font-black uppercase tracking-[0.26em] text-blue-300">Websites</h3>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {WEBSITE_SERVICES.map((service) => (
+              <div key={service.name} className="glass-panel hairline flex flex-col rounded-2xl px-5 py-5 transition hover:-translate-y-0.5">
+                <div className="flex items-start justify-between gap-3">
+                  <h4 className="text-sm font-black text-white">{service.name}</h4>
+                  <span className="shrink-0 text-xs font-black text-blue-200">{service.price}</span>
+                </div>
+                <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-400">{service.description}</p>
+                <a href="#contact" className="mt-4 inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-blue-300 transition hover:text-blue-200">Request this service →</a>
+              </div>
+            ))}
+          </div>
+
+          <h3 className="mt-12 text-center text-xs font-black uppercase tracking-[0.26em] text-violet-300">SaaS &amp; Web Apps</h3>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {SAAS_SERVICES.map((service) => (
+              <div key={service.name} className="glass-panel hairline flex flex-col rounded-2xl px-5 py-5 transition hover:-translate-y-0.5">
+                <div className="flex items-start justify-between gap-3">
+                  <h4 className="text-sm font-black text-white">{service.name}</h4>
+                  <span className="shrink-0 text-xs font-black text-violet-200">{service.price}</span>
+                </div>
+                <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-400">{service.description}</p>
+                <a href="#contact" className="mt-4 inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-violet-300 transition hover:text-violet-200">Request this service →</a>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <a href="#contact" className="btn-primary inline-block rounded-xl px-8 py-4 text-sm font-bold text-white">Get a Free Quote →</a>
           </div>
         </section>
 
