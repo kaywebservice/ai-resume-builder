@@ -15,6 +15,7 @@ const SKILLS = [
   { name: "Databases", level: "Expert" },
   { name: "Firebase", level: "Advanced" },
   { name: "Supabase", level: "Advanced" },
+  { name: "SEO Optimization", level: "Advanced" },
   { name: "Git & GitHub", level: "Expert" },
 ];
 
@@ -91,6 +92,8 @@ const WEBSITE_SERVICES = [
   { name: "Booking & Reservation Site", price: "$400–$900", description: "Appointments, availability calendars, and instant confirmations." },
   { name: "Event & Registration Website", price: "$300–$700", description: "Event pages, ticketing, RSVPs, and attendee management." },
   { name: "Directory & Listing Website", price: "$700–$2,000", description: "Searchable business or service directories with profiles and reviews." },
+  { name: "SEO Optimization (One-Time)", price: "$300–$800", description: "Technical SEO, keyword research, on-page optimization, and page-speed fixes for higher rankings." },
+  { name: "SEO Monthly Care", price: "$100–$300/mo", description: "Ongoing SEO: content updates, link building, analytics reports, and ranking monitoring." },
 ];
 
 const SAAS_SERVICES = [
