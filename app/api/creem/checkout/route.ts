@@ -33,9 +33,12 @@ export async function POST(request: Request) {
     });
 
     if (!creemResponse.ok) {
-      const detail = await creemResponse.text();
+      const detail = await creemResponse.text().catch(() => "");
       console.error("Creem checkout failed:", creemResponse.status, detail);
-      return NextResponse.json({ success: false, error: "Could not start the payment." }, { status: 502 });
+      return NextResponse.json(
+        { success: false, error: `Could not start the payment (Creem ${creemResponse.status}).` },
+        { status: 502 },
+      );
     }
 
     const payload: unknown = await creemResponse.json();
