@@ -104,12 +104,87 @@ const SAAS_SERVICES = [
   { name: "Mobile-Ready Web App (PWA)", price: "from $1,200", description: "Installable, offline-capable web app that feels like a native mobile app." },
 ];
 
+const ALL_SERVICES = [...WEBSITE_SERVICES, ...SAAS_SERVICES].map((service) => service.name);
+
+const BUDGETS = ["Under $250", "$250 – $500", "$500 – $1,000", "$1,000 – $2,500", "$2,500+", "Not sure yet"];
+
+const TIMELINES = ["ASAP", "Within 2 weeks", "Within a month", "Flexible — no rush"];
+
 export default function PortfolioPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorText, setErrorText] = useState("");
+
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [quoteService, setQuoteService] = useState("");
+  const [qName, setQName] = useState("");
+  const [qEmail, setQEmail] = useState("");
+  const [qService, setQService] = useState("");
+  const [qBudget, setQBudget] = useState("");
+  const [qTimeline, setQTimeline] = useState("");
+  const [qDetails, setQDetails] = useState("");
+  const [qStatus, setQStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [qErrorText, setQErrorText] = useState("");
+
+  const openQuote = (service = "") => {
+    setQuoteService(service);
+    setQService(service);
+    setQStatus("idle");
+    setQErrorText("");
+    setQuoteOpen(true);
+  };
+
+  const closeQuote = () => {
+    setQuoteOpen(false);
+    setQStatus("idle");
+  };
+
+  const submitQuote = async () => {
+    setQStatus("sending");
+    setQErrorText("");
+    const details = qDetails.trim();
+    if (!qName.trim() || !qEmail.trim() || !details) {
+      setQStatus("error");
+      setQErrorText("Please fill in your name, email, and project details.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(qEmail.trim())) {
+      setQStatus("error");
+      setQErrorText("Please enter a valid email address.");
+      return;
+    }
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: qName.trim(),
+          email: qEmail.trim(),
+          subject: qService ? `Quote request: ${qService}` : "Quote request",
+          message: `Service: ${qService || "Not decided yet"}\nBudget: ${qBudget || "Not specified"}\nTimeline: ${qTimeline || "Not specified"}\n\nProject details:\n${details}`,
+        }),
+      });
+      const payload: unknown = await response.json();
+      const body = payload && typeof payload === "object" ? payload as Record<string, unknown> : {};
+      if (!response.ok) {
+        setQStatus("error");
+        setQErrorText(typeof body.error === "string" ? body.error : "Could not send your request.");
+        return;
+      }
+      setQStatus("sent");
+      setQName("");
+      setQEmail("");
+      setQService("");
+      setQBudget("");
+      setQTimeline("");
+      setQDetails("");
+    } catch {
+      setQStatus("error");
+      setQErrorText("Could not reach the server. Please try again.");
+    }
+  };
 
   const submit = async () => {
     setStatus("sending");
@@ -148,7 +223,7 @@ export default function PortfolioPage() {
           </div>
         </header>
 
-        <section className="anim-fade-in-up text-center">
+        <section className="anim-slide-in-left text-center">
           <div className="logo-tile mx-auto mb-5"><span className="text-xl font-black text-white">KW</span></div>
           <p className="eyebrow">Hello, I am</p>
           <h1 className="mt-3 text-4xl font-black tracking-tight text-white sm:text-6xl">
@@ -165,10 +240,11 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <section className="mt-16">
+        <section className="anim-slide-in-right mt-16" style={{ animationDelay: "0.1s" }}>
           <h2 className="section-title text-center">About Me</h2>
           <div className="glass-panel hairline mx-auto max-w-3xl rounded-2xl px-6 py-6 text-sm leading-relaxed text-slate-300">
             <p>
+              My name is <strong className="text-white">Kaykay Wise</strong>, and I studied <strong className="text-white">Computer Science at Caleb University</strong>.
               I am a Senior Full-Stack Engineer &amp; SaaS Founder with <strong className="text-white">14 years of experience</strong> in
               programming and software-as-a-service. I specialize in privacy-first, local AI agent architectures, automated B2B
               developer utilities, and building complete products from the first line of code to paid customers.
@@ -185,9 +261,9 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <section className="mt-16">
+        <section className="anim-fade-in-up mt-16" style={{ animationDelay: "0.15s" }}>
           <h2 className="section-title text-center">Skills</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="anim-stagger grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {SKILLS.map((skill) => (
               <div key={skill.name} className="glass-panel hairline rounded-2xl px-4 py-4 text-center transition hover:-translate-y-0.5">
                 <p className="text-sm font-bold text-white">{skill.name}</p>
@@ -199,9 +275,9 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <section className="mt-16">
+        <section className="anim-fade-in-up mt-16" style={{ animationDelay: "0.2s" }}>
           <h2 className="section-title text-center">Projects</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="anim-stagger grid gap-4 sm:grid-cols-2">
             {PROJECTS.map((project) => (
               <a
                 key={project.title}
@@ -220,9 +296,9 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <section className="mt-16">
+        <section className="anim-slide-in-left mt-16" style={{ animationDelay: "0.25s" }}>
           <h2 className="section-title text-center">Websites I Designed</h2>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="anim-stagger grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {WEBSITES.map((site) => (
               <a
                 key={site.name}
@@ -238,7 +314,7 @@ export default function PortfolioPage() {
           </div>
         </section>
 
-        <section className="mt-16">
+        <section className="anim-slide-in-right mt-16" style={{ animationDelay: "0.3s" }}>
           <h2 className="section-title text-center">Services &amp; Pricing</h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-slate-400">
             Every project includes responsive design, SEO basics, and revisions until you are happy. Prices are starting
@@ -254,7 +330,7 @@ export default function PortfolioPage() {
                   <span className="shrink-0 text-xs font-black text-blue-200">{service.price}</span>
                 </div>
                 <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-400">{service.description}</p>
-                <a href="#contact" className="mt-4 inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-blue-300 transition hover:text-blue-200">Request this service →</a>
+                <button type="button" onClick={() => openQuote(service.name)} className="mt-4 self-start text-left text-[10px] font-bold uppercase tracking-[0.18em] text-blue-300 transition hover:text-blue-200">Request this service →</button>
               </div>
             ))}
           </div>
@@ -268,17 +344,17 @@ export default function PortfolioPage() {
                   <span className="shrink-0 text-xs font-black text-violet-200">{service.price}</span>
                 </div>
                 <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-400">{service.description}</p>
-                <a href="#contact" className="mt-4 inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-violet-300 transition hover:text-violet-200">Request this service →</a>
+                <button type="button" onClick={() => openQuote(service.name)} className="mt-4 self-start text-left text-[10px] font-bold uppercase tracking-[0.18em] text-violet-300 transition hover:text-violet-200">Request this service →</button>
               </div>
             ))}
           </div>
 
           <div className="mt-10 text-center">
-            <a href="#contact" className="btn-primary inline-block rounded-xl px-8 py-4 text-sm font-bold text-white">Get a Free Quote →</a>
+            <button type="button" onClick={() => openQuote()} className="btn-primary inline-block rounded-xl px-8 py-4 text-sm font-bold text-white">Get a Free Quote →</button>
           </div>
         </section>
 
-        <section id="contact" className="mt-16 scroll-mt-8">
+        <section id="contact" className="anim-fade-in-up mt-16 scroll-mt-8" style={{ animationDelay: "0.35s" }}>
           <h2 className="section-title text-center">Contact Me</h2>
           <div className="glass-panel hairline mx-auto max-w-2xl rounded-2xl p-6 sm:p-8">
             {status === "sent" ? (
@@ -315,6 +391,86 @@ export default function PortfolioPage() {
             )}
           </div>
         </section>
+
+        {quoteOpen && (
+          <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+            <div className="glass-panel hairline anim-scale-in max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl p-6 sm:p-8">
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div>
+                  <p className="eyebrow">Free Quote</p>
+                  <h2 className="mt-2 text-xl font-bold tracking-tight text-white">
+                    {quoteService ? `Request a quote: ${quoteService}` : "Request a Free Quote"}
+                  </h2>
+                </div>
+                <button type="button" onClick={closeQuote} aria-label="Close" className="btn-ghost rounded-xl px-3 py-1.5 text-xs font-bold text-slate-300">✕</button>
+              </div>
+
+              {qStatus === "sent" ? (
+                <div className="anim-fade-in-up py-8 text-center">
+                  <div className="premium-chip mx-auto mb-4">✓</div>
+                  <h3 className="text-lg font-bold text-white">Request sent!</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                    Thank you{quoteService ? ` — I will get back to you about ${quoteService}` : ""} within 24 hours.
+                  </p>
+                  <button type="button" onClick={closeQuote} className="btn-primary mt-6 rounded-xl px-6 py-3 text-sm font-bold text-white">Done</button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="q-name" className="m-label" style={{ margin: "0 0 6px" }}>Your Name *</label>
+                      <input id="q-name" value={qName} onChange={(event) => setQName(event.target.value)} placeholder="John Doe" className="input-lux" />
+                    </div>
+                    <div>
+                      <label htmlFor="q-email" className="m-label" style={{ margin: "0 0 6px" }}>Your Email *</label>
+                      <input id="q-email" type="email" value={qEmail} onChange={(event) => setQEmail(event.target.value)} placeholder="you@example.com" className="input-lux" />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="q-service" className="m-label" style={{ margin: "0 0 6px" }}>What do you want to build?</label>
+                    <select id="q-service" value={qService} onChange={(event) => setQService(event.target.value)} className="input-lux">
+                      <option value="">Not sure yet — let&apos;s discuss</option>
+                      {ALL_SERVICES.map((service) => (
+                        <option key={service} value={service}>{service}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="q-budget" className="m-label" style={{ margin: "0 0 6px" }}>Budget</label>
+                      <select id="q-budget" value={qBudget} onChange={(event) => setQBudget(event.target.value)} className="input-lux">
+                        <option value="">Select a range…</option>
+                        {BUDGETS.map((budget) => (
+                          <option key={budget} value={budget}>{budget}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="q-timeline" className="m-label" style={{ margin: "0 0 6px" }}>Timeline</label>
+                      <select id="q-timeline" value={qTimeline} onChange={(event) => setQTimeline(event.target.value)} className="input-lux">
+                        <option value="">When do you need it?</option>
+                        {TIMELINES.map((timeline) => (
+                          <option key={timeline} value={timeline}>{timeline}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="q-details" className="m-label" style={{ margin: "0 0 6px" }}>Project Details *</label>
+                    <textarea id="q-details" rows={5} value={qDetails} onChange={(event) => setQDetails(event.target.value)} placeholder="Describe your project — features, pages, integrations, examples you like…" className="input-lux w-full resize-none" />
+                  </div>
+                  {qStatus === "error" && (
+                    <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">{qErrorText}</p>
+                  )}
+                  <button type="button" onClick={submitQuote} disabled={qStatus === "sending"} className="btn-primary w-full rounded-xl py-4 text-base font-bold text-white disabled:opacity-60">
+                    {qStatus === "sending" ? "Sending…" : "Send Quote Request"}
+                  </button>
+                  <p className="text-center text-[11px] text-slate-500">Emailed straight to me — I reply within 24 hours.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         <footer className="mt-16 border-t border-white/5 py-8 text-center">
           <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500">

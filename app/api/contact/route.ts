@@ -11,6 +11,7 @@ export async function POST(request: Request) {
     const name = typeof record.name === "string" ? record.name.trim() : "";
     const email = typeof record.email === "string" ? record.email.trim() : "";
     const message = typeof record.message === "string" ? record.message.trim() : "";
+    const subject = typeof record.subject === "string" ? record.subject.trim() : "";
 
     if (!name || !email || !message) {
       return NextResponse.json({ success: false, error: "Name, email, and message are required." }, { status: 400 });
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ success: false, error: "A valid email is required." }, { status: 400 });
     }
-    if (name.length > 200 || email.length > 200 || message.length > 10000) {
+    if (name.length > 200 || email.length > 200 || message.length > 10000 || subject.length > 200) {
       return NextResponse.json({ success: false, error: "Message too long." }, { status: 400 });
     }
 
@@ -41,8 +42,8 @@ export async function POST(request: Request) {
         from: FROM_EMAIL,
         to: [TO_EMAIL],
         reply_to: email,
-        subject: `New portfolio message from ${name}`,
-        text: `New message from the portfolio contact form.\n\nName: ${name}\nEmail: ${email}\n\n${message}`,
+        subject: subject ? `${subject} — from ${name}` : `New portfolio message from ${name}`,
+        text: `New message from the portfolio contact form.\n\nName: ${name}\nEmail: ${email}${subject ? `\nRequest: ${subject}` : ""}\n\n${message}`,
       }),
     });
 
