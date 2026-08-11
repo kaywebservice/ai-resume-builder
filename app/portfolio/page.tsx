@@ -389,7 +389,7 @@ export default function PortfolioPage() {
                 <button type="button" onClick={submit} disabled={status === "sending"} className="btn-primary w-full rounded-xl py-4 text-base font-bold text-white disabled:opacity-60">
                   {status === "sending" ? "Sending…" : "Send Message"}
                 </button>
-                <p className="text-center text-[11px] text-slate-500">Or email me directly: <a href="mailto:kaywebservice@gmail.com" className="text-blue-300 underline">kaywebservice@gmail.com</a></p>
+                <p className="text-center text-[11px] text-slate-500">Or email me directly: <a href="mailto:kaywebservice@gmail.com" className="text-blue-300 underline">kaywebservice@gmail.com</a> · Call/WhatsApp: <a href="tel:+12133295005" className="text-blue-300 underline">+1 (213) 329-5005</a></p>
               </div>
             )}
           </div>
