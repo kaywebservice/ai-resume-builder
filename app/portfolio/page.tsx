@@ -241,7 +241,7 @@ export default function PortfolioPage() {
         <section className="mt-16">
           <h2 className="section-title text-center">Services &amp; Pricing</h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-slate-400">
-            Every project includes responsive design, SEO basics, and revisions until you're happy. Prices are starting
+            Every project includes responsive design, SEO basics, and revisions until you are happy. Prices are starting
             points — final quotes depend on scope.
           </p>
 
