@@ -607,6 +607,9 @@ ${hasDraft ? `Old Resume Draft:\n${draftText}` : ""}
             </div>
             <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">Secure checkout · Card · Apple Pay · Google Pay</p>
           </div>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400">
+            Use every tool free. Upgrade once — one-time payment unlocks all 30 premium templates, ATS scoring, and more.
+          </p>
           <div className="mt-6 grid gap-5 md:grid-cols-2">
             <div className="glass-panel hairline rounded-3xl border-t-2 border-t-blue-400/40 p-6 md:p-7">
               <div className="flex items-center justify-between">
