@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "AI Resume Builder",
   description: "Generate professional resumes and cover letters with AI.",
+  verification: {
+    google: "vzREjfhomsn9KoFEywBS7ebsa7Wo-ttVmnc8jPh7l70",
+  },
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/favicon.ico",
