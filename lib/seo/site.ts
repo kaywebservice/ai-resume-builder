@@ -1,8 +1,12 @@
 import { headers } from "next/headers";
 
-export const PRIMARY_SITE_URL = "https://airb.duckdns.org";
+export const PRIMARY_SITE_URL = "https://www.airb.duckdns.org";
 
 export const PORTFOLIO_URL = "https://kaywebservice.duckdns.org/portfolio";
+
+export function isAirbHost(host: string): boolean {
+  return host.startsWith("airb.") || host.startsWith("www.airb.");
+}
 
 export async function getRequestSiteUrl(): Promise<string> {
   const h = await headers();
@@ -17,5 +21,5 @@ export async function getRequestSiteUrl(): Promise<string> {
 export async function isAirbRequest(): Promise<boolean> {
   const h = await headers();
   const host = h.get("host") ?? "";
-  return host.startsWith("airb.");
+  return isAirbHost(host);
 }

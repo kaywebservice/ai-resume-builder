@@ -1,7 +1,7 @@
 import { CITIES, citySlug, REGION_LABELS, type City } from "./data";
 import { SEO_SERVICES, type SeoService } from "./services";
 
-export const SITE_URL = "https://airb.duckdns.org";
+export const SITE_URL = "https://www.airb.duckdns.org";
 
 export type SeoPage = {
   slug: string;
