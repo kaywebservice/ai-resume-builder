@@ -184,6 +184,14 @@ export default function Home() {
         // ignore corrupt drafts
       }
     }
+    const params = new URLSearchParams(window.location.search);
+    const job = params.get("jobTitle");
+    if (job && typeof job === "string" && job.trim() !== "") {
+      setForm((current) => ({ ...current, jobTitle: job.trim() }));
+      params.delete("jobTitle");
+      const qs = params.toString();
+      window.history.replaceState({}, "", qs ? `?${qs}` : window.location.pathname);
+    }
   }, []);
 
   useEffect(() => {
