@@ -31,13 +31,13 @@ const PROJECTS = [
     title: "Photoshop Clone",
     tag: "Image Editor",
     description: "A browser-based image editor with layers, filters, cropping, and export workflows.",
-    link: "https://github.com/kaywebservice",
+    link: "https://kaypaint.vercel.app",
   },
   {
     title: "AI Image Generator",
     tag: "AI · Design",
     description: "AI-powered image generation tool with prompt-based workflows and gallery management.",
-    link: "https://github.com/kaywebservice",
+    link: "https://character-forge-kappa.vercel.app",
   },
   {
     title: "Behavioral Profiling SaaS Demo",
