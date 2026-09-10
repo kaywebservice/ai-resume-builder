@@ -49,7 +49,7 @@ const PROJECTS = [
     title: "Behavioural Questionnaire App",
     tag: "React",
     description: "React web app delivering a dynamic multiple-choice questionnaire that generates personalized behavioral profiles instantly.",
-    link: "https://github.com/kaywebservice/Behavioural-Questionnaire-App",
+    link: "https://behavioural-questionnaire-app.vercel.app",
   },
   {
     title: "Token-Based Access Control System",
@@ -67,7 +67,7 @@ const PROJECTS = [
     title: "Responsive Portfolio Website",
     tag: "HTML · CSS",
     description: "A clean, fully responsive portfolio website built with pure HTML and CSS.",
-    link: "https://github.com/kaywebservice/responsive-portfolio-website",
+    link: "https://responsive-portfolio-website-omega-peach.vercel.app",
   },
 ];
 
