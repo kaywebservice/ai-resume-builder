@@ -247,7 +247,7 @@ export default function PortfolioPage() {
           <h2 className="section-title text-center">About Me</h2>
           <div className="glass-panel hairline mx-auto max-w-3xl rounded-2xl px-6 py-6 text-sm leading-relaxed text-slate-300">
             <p>
-              My name is <strong className="text-white">Kaykay Wise</strong>, and I studied <strong className="text-white">Computer Science at Caleb University</strong>.
+              My name is <strong className="text-white">Kaykay Wise</strong>.
               I am a Senior Full-Stack Engineer &amp; SaaS Founder with <strong className="text-white">14 years of experience</strong> in
               programming and software-as-a-service. I specialize in privacy-first, local AI agent architectures, automated B2B
               developer utilities, and building complete products from the first line of code to paid customers.
@@ -257,7 +257,6 @@ export default function PortfolioPage() {
               including payment integrations, token-based access control, and behavioral profiling systems.
             </p>
             <div className="mt-5 flex flex-wrap gap-2 text-[11px] text-slate-400">
-              <span className="premium-chip">🎓 Education: Caleb University</span>
               <span className="premium-chip">💼 14+ Years Experience</span>
               <span className="premium-chip">🌍 Remote · Freelance · Partnerships</span>
             </div>
@@ -389,7 +388,7 @@ export default function PortfolioPage() {
                 <button type="button" onClick={submit} disabled={status === "sending"} className="btn-primary w-full rounded-xl py-4 text-base font-bold text-white disabled:opacity-60">
                   {status === "sending" ? "Sending…" : "Send Message"}
                 </button>
-                <p className="text-center text-[11px] text-slate-500">Or email me directly: <a href="mailto:kaywebservice@gmail.com" className="text-blue-300 underline">kaywebservice@gmail.com</a> · Call/WhatsApp: <a href="tel:+12133295005" className="text-blue-300 underline">+1 (213) 329-5005</a></p>
+                <p className="text-center text-[11px] text-slate-500">Or email me directly: <a href="mailto:kaywebservice@gmail.com" className="text-blue-300 underline">kaywebservice@gmail.com</a></p>
               </div>
             )}
           </div>
